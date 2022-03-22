@@ -1,0 +1,20 @@
+FROM php:8.1-apache
+LABEL maintainer=mail@phillipunzen.de
+LABEL version=0.1
+LABEL release-data=22-02-2022
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
+        apt-get update && apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libzip-dev \
+        zip \
+        libpng-dev  -y &&\
+        a2enmod rewrite && \
+        a2enmod headers && \
+        service apache2 restart && \
+        docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg && \
+        docker-php-ext-install gd zip mysqli
+EXPOSE 80
+VOLUME /var/www/html
