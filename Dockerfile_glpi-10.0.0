@@ -1,0 +1,20 @@
+FROM debian:bullseye
+LABEL maintainer=development@phillipunzen.de
+LABEL version=1.0
+LABEL release-data=23-06-2022
+RUN echo "=> Installiere PHP und Apache Webserver..."
+RUN apt update && apt install sudo apache2 php libapache2-mod-php php-mysqli wget php-mbstring php-curl php-gd php-simplexml php-intl php-ldap php-apcu php-xmlrpc php-cas php-zip php-bz2 php-ldap php-imap -y && \
+    rm /etc/apache2/sites-available/000-default.conf && wget https://phillipunzen.de/dockerfiles/glpi/000-default.conf -P /etc/apache2/sites-available && \
+    cd /tmp && \
+    wget https://github.com/glpi-project/glpi/releases/download/10.0.0/glpi-10.0.0.tgz && \
+    tar -xvzf glpi-10.0.0.tgz && \
+    rm /var/www/html/index.html && \
+    cp -R glpi/* /var/www/html/ && \
+    chown -R www-data /var/www/html
+RUN echo "=> Installation abgeschlossen!"
+CMD service apache2 start && \
+    a2enmod rewrite && \
+    service apache2 restart && \
+    tail -f /dev/null
+EXPOSE 80
+VOLUME /var/www/html
