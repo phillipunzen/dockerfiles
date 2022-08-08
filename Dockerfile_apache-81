@@ -1,20 +1,13 @@
-FROM php:8.1-apache
-LABEL maintainer=mail@phillipunzen.de
-LABEL version=0.1
-LABEL release-data=22-02-2022
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
-        apt-get update && apt-get install -y \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libzip-dev \
-        zip \
-        libpng-dev  -y &&\
-        a2enmod rewrite && \
-        a2enmod headers && \
-        service apache2 restart && \
-        docker-php-ext-configure gd \
+FROM php:apache-bullseye
+RUN echo "=> Installiere Updates, aktualisiere Paketquellen und installiere Pakete"
+RUN apt update && apt upgrade -y && apt autoremove -y && \
+    apt install ca-certificates apt-transport-https gnupg libfreetype6-dev libjpeg62-turbo-dev libzip-dev libpng-dev -y && \
+    apt update && \
+    docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg && \
         docker-php-ext-install gd zip mysqli
+RUN echo "=> Gebe den Port 80 frei"
 EXPOSE 80
+RUN echo "=> Setze das Verzeichnis frei für die Web-Dateien"
 VOLUME /var/www/html
