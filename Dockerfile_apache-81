@@ -10,4 +10,5 @@ RUN apt update && apt upgrade -y && apt autoremove -y && \
 RUN echo "=> Gebe den Port 80 frei"
 EXPOSE 80
 RUN echo "=> Setze das Verzeichnis frei für die Web-Dateien"
+RUN a2enmod rewrite && systemctl restart apache2
 VOLUME /var/www/html
